@@ -7,6 +7,8 @@ import keyboard
 MainROM = []
 ValueROM = []
 Tokens = []
+stra = ""
+stra.removeprefix
 
 REGISTERS = {"REG0":0, "REG1":1,"REG2":2, "REG3":3}
 CALCINSTR = {"ADD":0, "SUB":1, "MUL":2}
@@ -14,7 +16,13 @@ CALCINSTR = {"ADD":0, "SUB":1, "MUL":2}
 def InterpretIMM(args) -> list:
     return [0, int(args[0])]
 def InterpretMOV(args):
-    return [(1<<12) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4), 0]
+    if (args[0].upper().startswith("RM")):
+        return [(1<<12) + (REGISTERS[args[1].upper()]<<4) + 8, int(args[0].upper().removeprefix("RM"))<<8]
+    elif (args[1].upper().startswith("RM")):
+        return [(1<<12) + (REGISTERS[args[0].upper()]<<8) + 12, int(args[1].upper().removeprefix("RM"))<<8]
+    else:
+        return [(1<<12) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4), 0]
+    
 def InterpretCAL(args):
     return [(1<<12) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4) + CALCINSTR[args[2].upper()], 0]
 
@@ -54,10 +62,3 @@ pyperclip.copy(str0)
 while not keyboard.is_pressed('a'):
     pass
 pyperclip.copy(str1)
-    
-
-
-
-
-        
-        
