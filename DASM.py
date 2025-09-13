@@ -77,8 +77,7 @@ with open("test.dasm") as f:
 
 str0 = ""
 
-print(MainROM[1])
-print(ValueROM[1])
+
 for i in range(0, 256):
     if (i < len(MainROM)):
         str0 += format(MainROM[i], '16b') + "\n"
@@ -92,6 +91,8 @@ for i in range(0, 256):
         str1+="0000000000000000\n"
 
 pyperclip.copy(str0)
+print("Main ROM copied to clipboard. Press a to continue to Value ROM")
 while not keyboard.is_pressed('a'):
     pass
 pyperclip.copy(str1)
+print("Value ROM copied to clipboard.")
