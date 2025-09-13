@@ -61,15 +61,15 @@ with open("test.dasm") as f:
     for line in lines:
         line = line.removesuffix("\n").split(" ")
         val = []
-        if line[0] == "IMM":
+        if line[0] == "IMM": #Ex: IMM 64
             val = InterpretIMM(line[1:])
-        elif line[0] == "MOV":
+        elif line[0] == "MOV": #Ex: MOV REG0 RM22
             val = InterpretMOV(line[1:])
-        elif line[0] == "CAl":
+        elif line[0] == "CAl": #Ex: CAL REG0 REG1 SUB
             val = InterpretCAL(line[1:])
-        elif line[0] == "RSC":
+        elif line[0] == "RSC": #Ex: RSC
             val = InterpretRSC()
-        elif line[0] == "JMP":
+        elif line[0] == "JMP": #Ex: JMP 0
             val = InterpretJMP(line[1:])
         MainROM.append(val[0])
         ValueROM.append(val[1])
