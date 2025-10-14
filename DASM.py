@@ -33,7 +33,7 @@ def InterpretReadWriteMain(arg: str, r: bool): #interpret where to read and writ
         else:
             val[0] += REGISTERS[arg.upper()]<<4
     return val
-def InterpretIMM(args) -> list:
+def InterpretIMM(args) -> list: #Input the number into REG0
     val = 0
     if (args[0].upper().startswith("RGB")): #example RGB255/255/255
         rgb = args[0].upper().removeprefix("RGB").split("/")
@@ -44,8 +44,8 @@ def InterpretIMM(args) -> list:
         val = (round(15*int(rgb[0], 16)/255.0)<<8) + (round(15*int(rgb[1], 16)/255.0)<<4) + round(15*int(rgb[2], 16)/255.0)
     else:
         val = int(args[0])
-    return [0, val]
-def InterpretMOV(args):
+    return [6<<12, val]
+def InterpretMOV(args): #Move from one memory location to another 
     val = [1<<12, 0]
     write = InterpretReadWriteMain(args[0], False)
     val[0] += write[0]
@@ -54,18 +54,21 @@ def InterpretMOV(args):
     val[0] += read[0]
     val[1] += read[1]
     return val
-def InterpretCAL(args):
+def InterpretCAL(args): #Calculate and move into REG0
     return [(2<<12) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4) + CALCINSTR[args[2].upper()], 0]
-def InterpretRSC():
+def InterpretRSSC(): #Reset Screen
     return [3<<12, 0]
-def InterpretJMP(args):
+def InterpretJMP(args): #Jump to line
     return [4<<12, int(args[0])]
-def InterpretDRW(args):
+def InterpretDRW(args): #Draw to Screen
     val = [(5<<12) + (REGISTERS[args[1]]<<4), 0]
     read = InterpretReadWriteMain(args[0], True)
     val[0] += read[0]
     val[1] += read[1]
     return val
+def InterpretRFSC(args): #Refresh Screen
+    return [(3<<12) + (8<<8), 0]
+
     
 
 
@@ -80,12 +83,14 @@ with open("test.dasm") as f:
             val = InterpretMOV(line[1:])
         elif line[0] == "CAL": #Ex: CAL REG0 REG1 SUB
             val = InterpretCAL(line[1:])
-        elif line[0] == "RSC": #Ex: RSC
-            val = InterpretRSC()
+        elif line[0] == "RSSC": #Ex: RSC
+            val = InterpretRSSC()
         elif line[0] == "JMP": #Ex: JMP 0
             val = InterpretJMP(line[1:])
         elif line[0] == "DRW": #Ex: DRW REG0(addr: only registers) RAM0(color)
             val = InterpretDRW(line[1:])
+        elif line[0] == "RFSC": #Ex: RFSC
+            val = InterpretRFSC(line[1:])
         
         MainROM.append(val[0])
         ValueROM.append(val[1])
@@ -96,13 +101,13 @@ str0 = ""
 
 for i in range(0, 256):
     if (i < len(MainROM)):
-        str0 += format(MainROM[i], '16b') + "\n"
+        str0 += format(MainROM[i], '016b') + "\n"
     else:
         str0+="0000000000000000\n"
 str1 = ""
 for i in range(0, 256):
     if (i < len(ValueROM)):
-        str1 += format(ValueROM[i], '16b')  + "\n"
+        str1 += format(ValueROM[i], '016b')  + "\n"
     else:
         str1+="0000000000000000\n"
 
