@@ -60,7 +60,7 @@ def InterpretRSSC(): #Reset Screen
     return [3<<12, 0]
 def InterpretJMP(args): #Jump to line
     return [4<<12, int(args[0])]
-def InterpretDRW(args): #Draw to Screen
+def InterpretWRT(args): #Draw to Screen
     val = [(5<<12) + (REGISTERS[args[1]]<<4), 0]
     read = InterpretReadWriteMain(args[0], True)
     val[0] += read[0]
@@ -77,19 +77,19 @@ with open("test.dasm") as f:
     for line in lines:
         line = line.removesuffix("\n").upper().split(" ")
         val = []
-        if line[0] == "IMM": #Ex: IMM 64
+        if line[0] == "IMM": #Immediately write a 16 bit value to register 0 Ex: IMM 64
             val = InterpretIMM(line[1:])
-        elif line[0] == "MOV": #Ex: MOV REG0(to) RM22(from)
+        elif line[0] == "MOV": #Move a value from one location to another Ex: MOV REG0(to) RM22(from)
             val = InterpretMOV(line[1:])
-        elif line[0] == "CAL": #Ex: CAL REG0 REG1 SUB
+        elif line[0] == "CAL": #Do a calculation using the ALU Ex: CAL REG0 REG1 SUB
             val = InterpretCAL(line[1:])
-        elif line[0] == "RSSC": #Ex: RSC
+        elif line[0] == "RSSC": #Reset the screen Ex: RSSC
             val = InterpretRSSC()
-        elif line[0] == "JMP": #Ex: JMP 0
+        elif line[0] == "JMP": #Jump from one instruction to another Ex: JMP 0
             val = InterpretJMP(line[1:])
-        elif line[0] == "DRW": #Ex: DRW REG0(addr: only registers) RAM0(color)
-            val = InterpretDRW(line[1:])
-        elif line[0] == "RFSC": #Ex: RFSC
+        elif line[0] == "WRT": #Write to the console Ex: WRT REG0(addr: only registers) RAM0(color)
+            val = InterpretWRT(line[1:])
+        elif line[0] == "RFSC": #Refresh the console screen(doesnt work) Ex: RFSC
             val = InterpretRFSC(line[1:])
         
         MainROM.append(val[0])
@@ -99,21 +99,8 @@ with open("test.dasm") as f:
 str0 = ""
 
 
-for i in range(0, 256):
-    if (i < len(MainROM)):
-        str0 += format(MainROM[i], '016b') + "\n"
-    else:
-        str0+="0000000000000000\n"
-str1 = ""
-for i in range(0, 256):
-    if (i < len(ValueROM)):
-        str1 += format(ValueROM[i], '016b')  + "\n"
-    else:
-        str1+="0000000000000000\n"
-
-pyperclip.copy(str0)
-print("Main ROM copied to clipboard. Press a to continue to Value ROM")
-while not keyboard.is_pressed('a'):
-    pass
-pyperclip.copy(str1)
-print("Value ROM copied to clipboard.")
+for i in range(0, len(MainROM)):
+   str0 += str(MainROM[i] + (ValueROM[i] << 16)) + " "
+str0 = str0.removesuffix(" ")
+with open("Circuits/code", "r") as f:
+    f.write("v2.0 raw\n" + str0)
