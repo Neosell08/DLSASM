@@ -44,7 +44,7 @@ def InterpretIMM(args) -> list: #Input the number into REG0
         val = (round(15*int(rgb[0], 16)/255.0)<<8) + (round(15*int(rgb[1], 16)/255.0)<<4) + round(15*int(rgb[2], 16)/255.0)
     else:
         val = int(args[0])
-    return [6<<12, val]
+    return [0<<12, val]
 def InterpretMOV(args): #Move from one memory location to another 
     val = [1<<12, 0]
     write = InterpretReadWriteMain(args[0], False)
@@ -101,6 +101,9 @@ str0 = ""
 
 for i in range(0, len(MainROM)):
    str0 += str(MainROM[i] + (ValueROM[i] << 16)) + " "
-str0 = str0.removesuffix(" ")
-with open("Circuits/code", "r") as f:
-    f.write("v2.0 raw\n" + str0)
+try:
+    with open("Circuits/code", "x") as f:
+        f.write("v2.0 raw\n" + str0)
+except FileExistsError:
+    with open("Circuits/code", "w") as f:
+        f.write("v2.0 raw\n" + str0)
