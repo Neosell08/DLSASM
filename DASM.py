@@ -44,9 +44,9 @@ def InterpretIMM(args) -> list: #Input the number into REG0
         val = (round(15*int(rgb[0], 16)/255.0)<<8) + (round(15*int(rgb[1], 16)/255.0)<<4) + round(15*int(rgb[2], 16)/255.0)
     else:
         val = int(args[0])
-    return [0<<12, val]
+    return [0, val]
 def InterpretMOV(args): #Move from one memory location to another 
-    val = [1<<12, 0]
+    val = [1, 0]
     write = InterpretReadWriteMain(args[0], False)
     val[0] += write[0]
     val[1] += write[1]
@@ -55,19 +55,19 @@ def InterpretMOV(args): #Move from one memory location to another
     val[1] += read[1]
     return val
 def InterpretCAL(args): #Calculate and move into REG0
-    return [(2<<12) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4) + CALCINSTR[args[2].upper()], 0]
+    return [(2) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4) + CALCINSTR[args[2].upper()], 0]
 def InterpretRSSC(): #Reset Screen
-    return [3<<12, 0]
+    return [3, 0]
 def InterpretJMP(args): #Jump to line
-    return [4<<12, int(args[0])]
+    return [4, int(args[0])]
 def InterpretWRT(args): #Draw to Screen
-    val = [(5<<12) + (REGISTERS[args[1]]<<4), 0]
+    val = [(5) + (REGISTERS[args[1]]<<4), 0]
     read = InterpretReadWriteMain(args[0], True)
     val[0] += read[0]
     val[1] += read[1]
     return val
 def InterpretRFSC(args): #Refresh Screen
-    return [(3<<12) + (8<<8), 0]
+    return [(3) + (8<<8), 0]
 
     
 
@@ -97,7 +97,7 @@ with open("test.dasm") as f:
 
 
 str0 = ""
-
+print(MainROM, ValueROM)
 
 for i in range(0, len(MainROM)):
    str0 += str(MainROM[i] + (ValueROM[i] << 16)) + " "
