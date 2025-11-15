@@ -7,32 +7,54 @@ import keyboard
 MainROM = []
 ValueROM = []
 Tokens = []
-stra = ""
-stra.removeprefix
+
+
+class Instruction:
+    def __init__(self, keyword: str, params: int, func):
+        self.keyword = keyword
+        self.params = params
+        self.func = func
+    def call(self, args: list):
+        if (len(args) != self.params):
+            raise ValueError("Not enough paramaters in function: " + self.keyword)
+        
+
 
 REGISTERS = {"REG0":0, "REG1":1,"REG2":2, "REG3":3}
 CALCINSTR = {"ADD":0, "SUB":1, "MUL":2}
+
+
+
 def InterpretReadWriteMain(arg: str, r: bool): #interpret where to read and write from on the main bus
     val = [0, 0]
+
     if r:
         if (arg.upper().startswith("RM")): #read from RAM
-            val[0] += 8
+            val[0] += 32
             val[1] += int(arg.upper().removeprefix("RM"))<<8
         elif (arg.upper().startswith("SC")): #read to screen
             val[0] += 2
             val[1] += int(arg.upper().removeprefix("SC"))
         else:
-            val[0] += REGISTERS[arg.upper()]<<8
+            val[1] += REGISTERS[arg.upper()]
     else:       
         if (arg.upper().startswith("RM")): #write to RAM
-            val[0] += 12
+            val[0] += 16
             val[1] += int(arg.upper().removeprefix("RM"))<<8
         elif (arg.upper().startswith("SC")): #write from screen
             val[0] += 3
             val[1] += int(arg.upper().removeprefix("SC"))
         else:
-            val[0] += REGISTERS[arg.upper()]<<4
+            
+            val[1] += REGISTERS[arg.upper()]
     return val
+def reversebits(num: int, bits: int) -> int:
+    result = 0
+    for i in range(bits):
+        if num & (1 << i):
+            result |= 1 << (bits - 1 - i)
+    return result
+
 def InterpretIMM(args) -> list: #Input the number into REG0
     val = 0
     if (args[0].upper().startswith("RGB")): #example RGB255/255/255
@@ -50,57 +72,42 @@ def InterpretMOV(args): #Move from one memory location to another
     write = InterpretReadWriteMain(args[0], False)
     val[0] += write[0]
     val[1] += write[1]
+   
     read = InterpretReadWriteMain(args[1], True)
     val[0] += read[0]
     val[1] += read[1]
+    
     return val
-def InterpretCAL(args): #Calculate and move into REG0
-    return [(2) + (REGISTERS[args[0].upper()]<<8) + (REGISTERS[args[1].upper()]<<4) + CALCINSTR[args[2].upper()], 0]
+def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
+    
+    return [2 + (REGISTERS[args[1].upper()]<<12) + (CALCINSTR[args[2].upper()]<<4), (REGISTERS[args[0].upper()]<<4)]
 def InterpretRSSC(): #Reset Screen
-    return [3, 0]
+    return [5, 0]
 def InterpretJMP(args): #Jump to line
-    return [4, int(args[0])]
+    return [3, int(args[0])]
 def InterpretWRT(args): #Draw to Screen
-    val = [(5) + (REGISTERS[args[1]]<<4), 0]
-    read = InterpretReadWriteMain(args[0], True)
-    val[0] += read[0]
-    val[1] += read[1]
+    val = [(4) + (REGISTERS[args[0]]<<4), 0]
     return val
 def InterpretRFSC(args): #Refresh Screen
     return [(3) + (8<<8), 0]
 
-    
+INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM), "MOV":Instruction("MOV", 2, InterpretMOV), "CAL":Instruction("CAL", 3, InterpretCAL), "RSSC":Instruction("RSSC", 0, InterpretRSSC), "JMP":Instruction("JMP", 1, InterpretJMP), "WRT":Instruction("WRT", 1, InterpretWRT)}
 
 
 with open("test.dasm") as f:
     lines = f.readlines()
     for line in lines:
         line = line.removesuffix("\n").upper().split(" ")
-        val = []
-        if line[0] == "IMM": #Immediately write a 16 bit value to register 0 Ex: IMM 64
-            val = InterpretIMM(line[1:])
-        elif line[0] == "MOV": #Move a value from one location to another Ex: MOV REG0(to) RM22(from)
-            val = InterpretMOV(line[1:])
-        elif line[0] == "CAL": #Do a calculation using the ALU Ex: CAL REG0 REG1 SUB
-            val = InterpretCAL(line[1:])
-        elif line[0] == "RSSC": #Reset the screen Ex: RSSC
-            val = InterpretRSSC()
-        elif line[0] == "JMP": #Jump from one instruction to another Ex: JMP 0
-            val = InterpretJMP(line[1:])
-        elif line[0] == "WRT": #Write to the console Ex: WRT REG0(addr: only registers) RAM0(color)
-            val = InterpretWRT(line[1:])
-        elif line[0] == "RFSC": #Refresh the console screen(doesnt work) Ex: RFSC
-            val = InterpretRFSC(line[1:])
-        
+        val = INSTRSET[line[0].upper()].call(line[1:]) #line[0] = instr, line[1:] = args
         MainROM.append(val[0])
         ValueROM.append(val[1])
 
 
 str0 = ""
-print(MainROM, ValueROM)
 
+print(type(InterpretWRT))
 for i in range(0, len(MainROM)):
-   str0 += str(MainROM[i] + (ValueROM[i] << 16)) + " "
+   str0 += str(format(MainROM[i] + (ValueROM[i] << 16), f'0{8}x')) + " "
 try:
     with open("Circuits/code", "x") as f:
         f.write("v2.0 raw\n" + str0)
