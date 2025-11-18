@@ -14,13 +14,14 @@ class Instruction:
         self.keyword = keyword
         self.params = params
         self.func = func
-    def call(self, args: list):
+    def call(self, args: list, linenum):
         if (len(args) != self.params):
-            raise ValueError("Not enough paramaters in function: " + self.keyword)
+            raise ValueError("Not enough paramaters in function: " + self.keyword + " at line " + str(linenum) + ". " + str(len(args)) + " given.\nArgs: " + str(args))
+        return self.func(args)
         
 
 
-REGISTERS = {"REG0":0, "REG1":1,"REG2":2, "REG3":3}
+REGISTERS = {"REG0":0, "REG1":1,"REG2":2, "REG3":3, "KBOARD":4, "RNDM":5}
 CALCINSTR = {"ADD":0, "SUB":1, "MUL":2}
 
 
@@ -84,29 +85,31 @@ def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is 
 def InterpretRSSC(): #Reset Screen
     return [5, 0]
 def InterpretJMP(args): #Jump to line
-    return [3, int(args[0])]
-def InterpretWRT(args): #Draw to Screen
-    val = [(4) + (REGISTERS[args[0]]<<4), 0]
+    return [3 + ((int(args[0])|48)>>4), int(args[0])|15]
+def InterpretJMI(args):
+    return [6  + + ((int(args[0])|48)>>12) + (REGISTERS[args[1]]<<12), int(args[0])|15]
+def InterpretWRT(args): #Draw to Screen ex: WRT 
+    val = [(4) + (REGISTERS[args[0]]<<12), 0]
     return val
 def InterpretRFSC(args): #Refresh Screen
     return [(3) + (8<<8), 0]
 
-INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM), "MOV":Instruction("MOV", 2, InterpretMOV), "CAL":Instruction("CAL", 3, InterpretCAL), "RSSC":Instruction("RSSC", 0, InterpretRSSC), "JMP":Instruction("JMP", 1, InterpretJMP), "WRT":Instruction("WRT", 1, InterpretWRT)}
+INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM), "MOV":Instruction("MOV", 2, InterpretMOV), "CAL":Instruction("CAL", 3, InterpretCAL), "RSSC":Instruction("RSSC", 0, InterpretRSSC), "JMP":Instruction("JMP", 1, InterpretJMP), "WRT":Instruction("WRT", 1, InterpretWRT), "JMI":Instruction("JMI", 2, InterpretJMI)}
 
 
 with open("test.dasm") as f:
     lines = f.readlines()
-    for line in lines:
-        line = line.removesuffix("\n").upper().split(" ")
-        val = INSTRSET[line[0].upper()].call(line[1:]) #line[0] = instr, line[1:] = args
+    for index in range(len(lines)):
+        line = lines[index].removesuffix("\n").upper().split(" ")
+        val = INSTRSET[line[0].upper()].call(line[1:], index) #line[0] = instr, line[1:] = args
         MainROM.append(val[0])
         ValueROM.append(val[1])
 
 
 str0 = ""
 
-print(type(InterpretWRT))
 for i in range(0, len(MainROM)):
+    
    str0 += str(format(MainROM[i] + (ValueROM[i] << 16), f'0{8}x')) + " "
 try:
     with open("Circuits/code", "x") as f:
