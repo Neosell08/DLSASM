@@ -82,12 +82,13 @@ def InterpretMOV(args): #Move from one memory location to another
 def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
     
     return [2 + (REGISTERS[args[1].upper()]<<12) + (CALCINSTR[args[2].upper()]<<4), (REGISTERS[args[0].upper()]<<4)]
-def InterpretRSSC(): #Reset Screen
+def InterpretRSSC(args): #Reset Screen
     return [5, 0]
 def InterpretJMP(args): #Jump to line
-    return [3 + ((int(args[0])|48)>>4), int(args[0])|15]
+    print((int(args[0])|48))
+    return [3 + ((int(args[0])&48)>>4), int(args[0])&15]
 def InterpretJMI(args):
-    return [6  + + ((int(args[0])|48)>>12) + (REGISTERS[args[1]]<<12), int(args[0])|15]
+    return [6  + + ((int(args[0])&48)>>12) + (REGISTERS[args[1]]<<12), int(args[0])&15]
 def InterpretWRT(args): #Draw to Screen ex: WRT 
     val = [(4) + (REGISTERS[args[0]]<<12), 0]
     return val
