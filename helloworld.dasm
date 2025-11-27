@@ -1,3 +1,4 @@
+rssc
 imm 72
 wrt reg0
 imm 69
@@ -20,6 +21,6 @@ imm 76
 wrt reg0
 imm 68
 wrt reg0
-imm 33 
-wrt reg0d
+imm 33
+wrt reg0
 jmp 0
