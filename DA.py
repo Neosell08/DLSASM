@@ -33,14 +33,14 @@ def InterpretReadWriteMain(arg: str, r: bool): #interpret where to read and writ
 
     if r:
         if (arg.upper().startswith("RM")): #read from RAM
-            val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&)<<8)
-            val[1] += 
+            val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&65280)<<8)
+            val[1] += int(arg.upper().removeprefix("RM"))&255
         else:
             val[1] += REGISTERS[arg.upper()]
     else:       
         if (arg.upper().startswith("RM")): #write to RAM
-            val[0] += 16
-            val[1] += int(arg.upper().removeprefix("RM"))<<8
+            val[0] += 16 + ((int(arg.upper().removeprefix("RM"))&65280)<<8)
+            val[1] += int(arg.upper().removeprefix("RM"))&255
         else:
             
             val[1] += REGISTERS[arg.upper()]
@@ -110,7 +110,7 @@ INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
                        }
 
 
-with open("test.dasm") as f:
+with open("test.da") as f:
     lines = f.readlines()
     
     i = 0

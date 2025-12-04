@@ -1,0 +1,3 @@
+imm 2
+mov reg1 reg0
+mov rm2 reg1

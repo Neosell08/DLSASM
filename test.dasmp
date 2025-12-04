@@ -1,5 +1,0 @@
-func(helloworld)
-write("Hello world")
-alloc(x, 23)
-write(x)
-endfunc(helloworld)
