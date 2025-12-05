@@ -28,6 +28,8 @@ def HandleParam(arg: str):
         return consts[arg]
     elif HasVar(arg) != None:
         return HasVar(arg)
+    elif arg.startswith("&") and HasVar(arg.removeprefix("&")):
+        return HasVar(arg.removeprefix("&")).addr
     else: return None
 def Allocate(args: list):
     lines = []

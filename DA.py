@@ -99,6 +99,21 @@ def InterpretWRT(args): #Draw to Screen ex: WRT
     return val
 def InterpretRFSC(args): #Refresh Screen
     return [(3) + (8<<8), 0]
+def InterpretMOA(args):
+    val = [65, 0]
+    if (args[0] == 0): # read from the adress on the second register and write it to the first
+        #adress is on the second nibble of the second segment while write adress is the first of the second segment
+        val[0] += 32
+        val[1] += REGISTERS[args[2]]<<4
+        val[1] += REGISTERS[args[1]]
+    else: # read from the second register and write it to the adress of the first
+        #adress is on the second nibble of the second segment while the read value is on the last of the first segment
+        #MOA REG0(write to the adress of this) REG1(read the value from this)
+        val[0] += 16
+        val[0] += REGISTERS[args[2]]<<12
+        val[1] += REGISTERS[args[1]]<<4
+    return val
+        
 
 INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
             "MOV":Instruction("MOV", 2, InterpretMOV),
@@ -106,7 +121,8 @@ INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
             "RSSC":Instruction("RSSC", 0, InterpretRSSC),
             "JMP":Instruction("JMP", 1, InterpretJMP),
             "WRT":Instruction("WRT", 1, InterpretWRT),
-            "JMI":Instruction("JMI", 2, InterpretJMI)
+            "JMI":Instruction("JMI", 2, InterpretJMI),
+            "MOA":Instruction("MOA", 3, InterpretMOA)
                        }
 
 
