@@ -8,6 +8,4 @@ wrt reg2
 cal reg2 reg1 add
 mov reg2 reg0
 cal reg2 reg3 LT
-jmi 6 reg0
-rssc
-jmp 0
+jmi 5 reg0

@@ -66,6 +66,7 @@ while i - removedlines < len(lines):
         curFuncArea[0] = curi
         curFuncName = line.split(" ")[1].removesuffix(":")
         isInFunc = True
+        print(curFuncName)
 
     elif line.startswith("endfunc") and isInFunc:
         removedlines += 1
@@ -88,7 +89,8 @@ while i - removedlines < len(lines):
 
 INSTRSET = {
     "write":Instruction("write", 1, InterpretWrite),
-    "alloc":Instruction("alloc", 2, Allocate)}
+    "alloc":Instruction("alloc", 2, Allocate),
+    "calc":Instruction("calc", 4, InterpretCalculate)}
 
 def InterpretInstruction(line: str, linenum: int):
     argindx = line.index("(")
@@ -99,8 +101,11 @@ def InterpretInstruction(line: str, linenum: int):
     return INSTRSET[instr].call(args, linenum)
 
 def LineLenghtFuncs(index: int) -> int:
-    if (index > len(funcs)-1 or index <= 0):
+    print(index)
+    if (index > len(funcs)-1 or index < 0):
         raise KeyError("Index invalid")
+    elif (index == 0):
+        return 0
     sm = 0
     for i in range(index):
         sm += len(funcs[i])
@@ -127,7 +132,7 @@ with open("DAPOut.da", "w") as f:
     for line in linelines:
         writelines.append(line + "\n")
     
-
+print(funcs[0].kword)
     
 
     

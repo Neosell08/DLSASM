@@ -24,7 +24,7 @@ class Instruction:
 
 
 REGISTERS = {"REG0":0, "REG1":1,"REG2":2, "REG3":3, "KBOARD":4, "RNDM":5}
-CALCINSTR = {"ADD":0, "SUB":1, "MUL":2}
+CALCINSTR = {"ADD":0, "SUB":1, "MUL":2, "DIV":3, "LT":4, "EQ":5, "GT":6}
 
 
 
@@ -76,17 +76,18 @@ def InterpretMOV(args): #Move from one memory location to another
     
     return val
 def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
-    
+    print(CALCINSTR[args[2].upper()])
     return [2 + (REGISTERS[args[1].upper()]<<12) + (CALCINSTR[args[2].upper()]<<4), (REGISTERS[args[0].upper()]<<4)]
 def InterpretRSSC(args): #Reset Screen
     return [5, 0]
 
 def InterpretJMP(args): #Jump to line
     args[0] = FindJumpLocation(args[0])
-    return [3 + ((args[0]&48)>>4), args[0]&15]
+    return [3 + ((args[0]&16711680)>>4), ((args[0]&3840)<<4)+(args[0]&255)]
 def InterpretJMI(args):
     args[0] = FindJumpLocation(args[0])
-    return [6  + ((args[0]&48)>>12) + (REGISTERS[args[1]]<<12), args[0]&15]
+    print([6  + ((args[0]&16773120)>>16) , ((args[0]&4080)<<4)+(args[0]&15)+ (REGISTERS[args[1]]<<4)])
+    return [6  + ((args[0]&16773120)>>16) , ((args[0]&4080)<<4)+(args[0]&15)+ (REGISTERS[args[1]]<<4)]
 def FindJumpLocation(arg):
     
     if arg.upper() in Macros:
@@ -94,7 +95,7 @@ def FindJumpLocation(arg):
     else:
         return int(arg)
     
-def InterpretWRT(args): #Draw to Screen ex: WRT 
+def InterpretWRT(args): #Draw to Screen ex: WRT REG0
     val = [(4) + (REGISTERS[args[0]]<<12), 0]
     return val
 def InterpretRFSC(args): #Refresh Screen
@@ -143,7 +144,7 @@ with open("test.da") as f:
         i += 1
     i = 0
     while i < len(lines):
-        line = lines[i].removesuffix("\n").split(" ")
+        line = lines[i].removesuffix("\n").strip(" ").split(" ")
         if line[0] == "":
             i += 1
             continue

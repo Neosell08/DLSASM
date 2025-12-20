@@ -30,3 +30,12 @@ def InterpretWrite(args):
             lines.append("WRT REG0")
     return lines
 
+def InterpretCalculate(args):
+    lines = []
+
+    lines.append("IMM " + str(args[1]))
+    lines.append("MOV REG1 REG0")
+    lines.append("IMM " + str(args[2]))
+    lines.append("MOV REG2 REG0")
+    lines.append("CAL REG1 REG2 " + args[3])
+    lines.append("MOV RM" + str(args[0].addr) + " REG0")
