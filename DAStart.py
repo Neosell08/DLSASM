@@ -1,7 +1,7 @@
 from DA import InterpretLines
 
 lines = []
-with open("test.da") as f:
+with open("interm.da") as f:
     lines = f.readlines()
 code = InterpretLines(lines)
     

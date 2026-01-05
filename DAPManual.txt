@@ -1,0 +1,17 @@
+DAP Instruction set
+
+alloc(var, val)
+
+allocates a value to a variable and creates variable if the variable doesnt exist
+
+write(x)
+
+writes a value or variable value to the console
+
+calc(var, a, b, op)
+
+calculates the value of a op b where op is the mathematical operation as designated in DA and then stores the value into var
+
+const var val
+
+sets a constant value to the keyword var, for example var=PI, val=3, cuz this program can't handle floats (yet)

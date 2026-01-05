@@ -20,7 +20,7 @@ class Variable:
     def __init__(self, kword, addr):
         self.kword = kword
         self.addr = addr
-def WriteToPos(pos: str, x):
+def WriteToPos(pos: str, x) -> list: 
     if type(x) == Variable:
         if (pos.startswith("RM")):
             return [f"MOV REG0 RM{x.addr}", f"MOV {pos} REG0"]
@@ -46,7 +46,14 @@ def InterpretWrite(args):
 
 def InterpretCalculate(args):
     lines = []
-    WriteToPos("REG1", args[1])
-    WriteToPos("REG2", args[2])
+    lines.extend(WriteToPos("REG1", args[1]))
+    lines.extend(WriteToPos("REG2", args[2]))
     lines.append("CAL REG1 REG2 " + args[3])
     lines.append(f"MOV RM{args[0].addr} REG0")
+    return lines
+def InterpretPtrVal(args):
+    lines = []
+    lines.append()
+
+
+

@@ -33,14 +33,14 @@ def InterpretReadWriteMain(arg: str, r: bool): #interpret where to read and writ
 
     if r:
         if (arg.upper().startswith("RM")): #read from RAM
-            val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&65280)<<8)
-            val[1] += int(arg.upper().removeprefix("RM"))&255
+            val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&0xff00)<<8)
+            val[1] += int(arg.upper().removeprefix("RM"))&0xff
         else:
             val[1] += REGISTERS[arg.upper()]
     else:       
         if (arg.upper().startswith("RM")): #write to RAM
-            val[0] += 16 + ((int(arg.upper().removeprefix("RM"))&65280)<<8)
-            val[1] += int(arg.upper().removeprefix("RM"))&255
+            val[0] += 16 + ((int(arg.upper().removeprefix("RM"))&0xff00)<<8)
+            val[1] += int(arg.upper().removeprefix("RM"))&0xff
         else:
             
             val[1] += REGISTERS[arg.upper()]

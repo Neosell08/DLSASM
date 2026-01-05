@@ -32,19 +32,30 @@ def HandleParam(arg: str):
     elif arg.startswith("&") and HasVar(arg.removeprefix("&")):
         return HasVar(arg.removeprefix("&")).addr
     else: return None
-def Allocate(args: list):
-    lines = []
-    def FindFreeAddr():
+def FindFreeAddr():
         unfreeaddr = []
         for var in varbs:
             unfreeaddr.append(var.addr)
         for i in range(len(unfreeaddr)+1):
             if not i in unfreeaddr:
                 return i
+def Allocate(args: list):
+    lines = []
     
-    varbs.append(Variable(args[0], FindFreeAddr()))
-    lines.append("IMM " + str(args[1]))
-    lines.append(f"MOV RM{varbs[len(varbs)-1].addr} REG0")
+    hasvarb = False
+    foundvarb = None
+    for varb in varbs:
+        if (varb.kword == parts[1]):
+            hasvarb = True
+            foundvarb = varb
+            break
+    if (hasvarb):
+        lines.append("IMM " + str(args[1]))
+        lines.append(f"MOV RM{foundvarb.addr} REG0")
+    else:
+        varbs.append(Variable(args[0], FindFreeAddr()))
+        lines.append("IMM " + str(args[1]))
+        lines.append(f"MOV RM{varbs[len(varbs)-1].addr} REG0")
     return lines
 
     
@@ -75,7 +86,6 @@ while i - removedlines < len(lines):
         lines.pop(curi)
         curFuncArea[1] = curi
         isInFunc = False
-        print(curFuncName)
         funcs.append(Function(curFuncName, curFuncArea.copy()))
         curFuncName = ""
         curFuncArea = [0, 0]
@@ -85,6 +95,18 @@ while i - removedlines < len(lines):
         lines.pop(curi)
         parts = line.split(" ")
         consts[parts[1]] = HandleParam(parts[2])
+    elif line.startswith("def"):
+        removedlines += 1
+        lines.pop(curi)
+        parts = line.split(" ")
+        hasvarb = False
+        for varb in varbs:
+            if (varb.kword == parts[1]):
+                hasvarb = True
+                break
+        if (not hasvarb):
+            varbs.append(Variable(parts[1], FindFreeAddr()))
+        
     i += 1
 
 
@@ -94,7 +116,8 @@ while i - removedlines < len(lines):
 INSTRSET = {
     "write":Instruction("write", 1, InterpretWrite),
     "alloc":Instruction("alloc", 2, Allocate),
-    "calc":Instruction("calc", 4, InterpretCalculate)}
+    "calc":Instruction("calc", 4, InterpretCalculate),
+    "ptrval":Instruction("ptrval", 3, InterpretPtrVal)}
 
 def InterpretInstruction(line: str, linenum: int):
     argindx = line.index("(")
@@ -104,15 +127,16 @@ def InterpretInstruction(line: str, linenum: int):
         args[i] = HandleParam(args[i].removeprefix(" "))
 
     if (instr in INSTRSET):
+        
         return INSTRSET[instr].call(args, linenum)
     else:
         for func in funcs:
             
             if func.kword == instr:
+                
                 return "JMP " + str(func.realArea[0]+1)
 
 def LineLenghtFuncs(index: int) -> int:
-    print(funcs[index].area)
     if (index > len(funcs)-1 or index < 0):
         raise KeyError("Index invalid")
     sm = 0
@@ -140,7 +164,6 @@ for i in range(len(lines)):
 
 writelines = []
 with open("DAPOut.da", "w") as f:
-    print(funclines)
     for i in range(len(funclines)):
         func = funclines[i] 
         for line in func:

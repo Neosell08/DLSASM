@@ -1,12 +1,8 @@
 
+def bsp
 
-# test comment
-func helloworld:
+func add
 
-write("Hello world")
-alloc("x", 35)
-write(x)
 
 
 endfunc
-helloworld()
