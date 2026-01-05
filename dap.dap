@@ -1,8 +1,12 @@
+
+
+# test comment
 func helloworld:
 
 write("Hello world")
-alloc("x", 23)
+alloc("x", 35)
 write(x)
 
 
 endfunc
+helloworld()

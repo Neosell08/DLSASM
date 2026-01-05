@@ -1,13 +1,13 @@
 import sympy
-from sympy.parsing.sympy_parser import parse_expr
-from sympy.printing.precedence import PRECEDENCE
+
 
 class Instruction:
     def __init__(self, keyword: str, params: int, func):
         self.keyword = keyword
         self.params = params
         self.func = func
-    def call(self, args: list, linenum):
+        
+    def call(self, args: list, linenum) -> str:
         if (len(args) != self.params):
             raise ValueError("Not enough paramaters in function: " + self.keyword + " at line " + str(linenum) + ". " + str(len(args)) + " given.\nArgs: " + str(args))
         return self.func(args)
@@ -15,10 +15,24 @@ class Function:
     def __init__(self, kword, area):
         self.kword = kword
         self.area = area
+        self.realArea = []
 class Variable:
     def __init__(self, kword, addr):
         self.kword = kword
         self.addr = addr
+def WriteToPos(pos: str, x):
+    if type(x) == Variable:
+        if (pos.startswith("RM")):
+            return [f"MOV REG0 RM{x.addr}", f"MOV {pos} REG0"]
+        else:
+            return [f"MOV {pos} RM{x.addr}"]
+    elif type(x) == int:
+        if (pos != "REG0"):
+            return [f"IMM {x}", f"MOV {pos} REG0"]
+        else:
+            return [f"IMM {x}"]
+        
+
 def InterpretWrite(args):
     lines = []
     if type(args[0]) == Variable:
@@ -32,10 +46,7 @@ def InterpretWrite(args):
 
 def InterpretCalculate(args):
     lines = []
-
-    lines.append("IMM " + str(args[1]))
-    lines.append("MOV REG1 REG0")
-    lines.append("IMM " + str(args[2]))
-    lines.append("MOV REG2 REG0")
+    WriteToPos("REG1", args[1])
+    WriteToPos("REG2", args[2])
     lines.append("CAL REG1 REG2 " + args[3])
-    lines.append("MOV RM" + str(args[0].addr) + " REG0")
+    lines.append(f"MOV RM{args[0].addr} REG0")

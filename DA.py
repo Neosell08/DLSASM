@@ -76,7 +76,6 @@ def InterpretMOV(args): #Move from one memory location to another
     
     return val
 def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
-    print(CALCINSTR[args[2].upper()])
     return [2 + (REGISTERS[args[1].upper()]<<12) + (CALCINSTR[args[2].upper()]<<4), (REGISTERS[args[0].upper()]<<4)]
 def InterpretRSSC(args): #Reset Screen
     return [5, 0]
@@ -86,7 +85,6 @@ def InterpretJMP(args): #Jump to line
     return [3 + ((args[0]&16711680)>>4), ((args[0]&3840)<<4)+(args[0]&255)]
 def InterpretJMI(args):
     args[0] = FindJumpLocation(args[0])
-    print([6  + ((args[0]&16773120)>>16) , ((args[0]&4080)<<4)+(args[0]&15)+ (REGISTERS[args[1]]<<4)])
     return [6  + ((args[0]&16773120)>>16) , ((args[0]&4080)<<4)+(args[0]&15)+ (REGISTERS[args[1]]<<4)]
 def FindJumpLocation(arg):
     
@@ -125,11 +123,7 @@ INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
             "JMI":Instruction("JMI", 2, InterpretJMI),
             "MOA":Instruction("MOA", 3, InterpretMOA)
                        }
-
-
-with open("test.da") as f:
-    lines = f.readlines()
-    
+def InterpretLines(lines: list):
     i = 0
     #preprocessing
     while i < len(lines):
@@ -152,18 +146,8 @@ with open("test.da") as f:
         MainROM.append(val[0])
         ValueROM.append(val[1])
         i += 1
+    str0 = ""
 
-
-str0 = ""
-
-print("written to code file")
-
-
-for i in range(0, len(MainROM)):
-   str0 += str(format(MainROM[i] + (ValueROM[i] << 16), f'0{8}x')) + " "
-try:
-    with open("Circuits/code", "x") as f:
-        f.write("v2.0 raw\n" + str0)
-except FileExistsError:
-    with open("Circuits/code", "w") as f:
-        f.write("v2.0 raw\n" + str0)
+    for i in range(0, len(MainROM)):
+        str0 += str(format(MainROM[i] + (ValueROM[i] << 16), f'0{8}x')) + " "
+    return "v2.0 raw\n" + str0
