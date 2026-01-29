@@ -15,3 +15,15 @@ calculates the value of a op b where op is the mathematical operation as designa
 const var val
 
 sets a constant value to the keyword var, for example var=PI, val=3, cuz this program can't handle floats (yet)
+
+def var
+
+defines a variable globally
+
+func f:
+
+defines a function floats
+
+endfunc 
+
+determines the ending bound of a function

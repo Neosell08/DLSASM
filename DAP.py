@@ -119,7 +119,7 @@ INSTRSET = {
     "calc":Instruction("calc", 4, InterpretCalculate),
     "ptrval":Instruction("ptrval", 3, InterpretPtrVal)}
 
-def InterpretInstruction(line: str, linenum: int):
+def InterpretInstruction(line: str, linenum: int, DALinenum):
     argindx = line.index("(")
     instr = line[:argindx]
     args = line.removeprefix(instr).removesuffix(")").removeprefix("(").removesuffix(" ").removesuffix(" ").split(",")
@@ -134,7 +134,19 @@ def InterpretInstruction(line: str, linenum: int):
             
             if func.kword == instr:
                 
-                return "JMP " + str(func.realArea[0]+1)
+                return [f"IMM {DALinenum&0xffff}",
+                        f"MOV REG1 RM64534",
+                        f"MOA 1 REG1 REG0",
+                        f"IMM 1",
+                        f"MOV REG2 REG0",
+                        f"CAL REG1 REG2 ADD",
+                        f"MOV REG1 REG0",
+                        
+                        f"IMM {(DALinenum&0xff0000)>>16}",
+                        f"MOA 1 REG1 REG0",
+                        f"CAL REG1 REG2 ADD",
+                        f"MOV RM64534 REG0"
+                        f"JMP {func.realArea[0]+1}"]
 
 def LineLenghtFuncs(index: int) -> int:
     if (index > len(funcs)-1 or index < 0):
@@ -160,6 +172,7 @@ for i in range(len(funclines)):
 linelines = []
 for i in range(len(lines)):
     line = lines[i]
+    
     linelines.append(InterpretInstruction(line, i + removedlines))
 
 writelines = []

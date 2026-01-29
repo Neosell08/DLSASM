@@ -7,7 +7,7 @@ class Instruction:
         self.params = params
         self.func = func
         
-    def call(self, args: list, linenum) -> str:
+    def call(self, args: list, linenum) -> list:
         if (len(args) != self.params):
             raise ValueError("Not enough paramaters in function: " + self.keyword + " at line " + str(linenum) + ". " + str(len(args)) + " given.\nArgs: " + str(args))
         return self.func(args)
@@ -51,9 +51,21 @@ def InterpretCalculate(args):
     lines.append("CAL REG1 REG2 " + args[3])
     lines.append(f"MOV RM{args[0].addr} REG0")
     return lines
-def InterpretPtrVal(args):
+def InterpretPtrVal(args): #arg0 = var to write/read from, arg1 = ram adress, arg2 = "r" or "w"
     lines = []
-    lines.append()
+    if type(args[1]) == int:
+        lines.append(f"IMM {args[1]}")
+        lines.append(f"MOV REG1 REG0")
+    elif type(args[1]) == Variable:
+        lines.append(f"MOV REG1 RM{args[1].addr}")
+    
+    if (args[2] == "r"):
+        lines.append("MOA 0 REG0 REG1")
+        lines.append(f"MOV RM{args[0].addr} REG0")
+    else:
+        lines.append(f"MOV REG0 RM{args[0].addr}")
+        lines.append("MOA 1 REG1 REG0")
+    return lines
 
 
 
