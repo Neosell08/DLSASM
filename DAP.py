@@ -57,6 +57,11 @@ def Allocate(args: list):
         lines.append("IMM " + str(args[1]))
         lines.append(f"MOV RM{varbs[len(varbs)-1].addr} REG0")
     return lines
+def InterpretInput(args):
+    return [f"MOV RM{args[0].addr} REG4"]
+def InterpretCallIf(args):
+    lines = []
+            
 
     
 
@@ -71,17 +76,17 @@ while i - removedlines < len(lines):
     line = lines[curi]
 
 
-    if line == "\n" or line[0] == '#':
+    if line == "\n" or line[0] == '#': #if is empty line or comment
         lines.pop(curi)
         removedlines += 1
-    elif line.startswith("func") and not isInFunc:
+    elif line.startswith("func") and not isInFunc: #if the start of a function
         removedlines += 1
         lines.pop(curi)
         curFuncArea[0] = curi
         curFuncName = line.split(" ")[1].removesuffix(":")
         isInFunc = True
 
-    elif line.startswith("endfunc") and isInFunc:
+    elif line.startswith("endfunc") and isInFunc: #if the end of a function
         removedlines += 1
         lines.pop(curi)
         curFuncArea[1] = curi
@@ -90,12 +95,12 @@ while i - removedlines < len(lines):
         curFuncName = ""
         curFuncArea = [0, 0]
 
-    elif line.startswith("const"):
+    elif line.startswith("const"): #if defining a constant
         removedlines += 1
         lines.pop(curi)
         parts = line.split(" ")
         consts[parts[1]] = HandleParam(parts[2])
-    elif line.startswith("def"):
+    elif line.startswith("def"): #if defining a variable pre interpret
         removedlines += 1
         lines.pop(curi)
         parts = line.split(" ")
@@ -117,37 +122,32 @@ INSTRSET = {
     "write":Instruction("write", 1, InterpretWrite),
     "alloc":Instruction("alloc", 2, Allocate),
     "calc":Instruction("calc", 4, InterpretCalculate),
-    "ptrval":Instruction("ptrval", 3, InterpretPtrVal)}
+    "ptrval":Instruction("ptrval", 3, InterpretPtrVal),
+    "return":Instruction("return", 0, InterpretReturn)}
 
-def InterpretInstruction(line: str, linenum: int, DALinenum):
-    argindx = line.index("(")
-    instr = line[:argindx]
-    args = line.removeprefix(instr).removesuffix(")").removeprefix("(").removesuffix(" ").removesuffix(" ").split(",")
-    for i in range(len(args)):
-        args[i] = HandleParam(args[i].removeprefix(" "))
-
-    if (instr in INSTRSET):
-        
-        return INSTRSET[instr].call(args, linenum)
-    else:
-        for func in funcs:
+def InterpretInstruction(line: str, linenum: int): #args: line string and index of line
+    try:
+        argindx = line.index("(")
+        instr = line[:argindx]
+        args = line.removeprefix(instr).removesuffix(")").removeprefix("(").removesuffix(" ").removesuffix(" ").split(",")
+        for i in range(len(args)):
+            arg = HandleParam(args[i].removeprefix(" "))
+            if (arg != None):
+                args[i] = arg
+            else:
+                args.pop(i) 
+        if (instr in INSTRSET):
             
-            if func.kword == instr:
+            return INSTRSET[instr].call(args, linenum)
+        else:
+            for func in funcs:
                 
-                return [f"IMM {DALinenum&0xffff}",
-                        f"MOV REG1 RM64534",
-                        f"MOA 1 REG1 REG0",
-                        f"IMM 1",
-                        f"MOV REG2 REG0",
-                        f"CAL REG1 REG2 ADD",
-                        f"MOV REG1 REG0",
-                        
-                        f"IMM {(DALinenum&0xff0000)>>16}",
-                        f"MOA 1 REG1 REG0",
-                        f"CAL REG1 REG2 ADD",
-                        f"MOV RM64534 REG0"
-                        f"JMP {func.realArea[0]+1}"]
-
+                if func.kword == instr:
+                    
+                    return [f"CALL",
+                            f"JMP {func.realArea[0]+1}"]
+    except:
+        raise ValueError(f"Error on line {linenum},\n{line}")
 def LineLenghtFuncs(index: int) -> int:
     if (index > len(funcs)-1 or index < 0):
         raise KeyError("Index invalid")
@@ -175,6 +175,7 @@ for i in range(len(lines)):
     
     linelines.append(InterpretInstruction(line, i + removedlines))
 
+# writelines = []
 writelines = []
 with open("DAPOut.da", "w") as f:
     for i in range(len(funclines)):
@@ -182,9 +183,9 @@ with open("DAPOut.da", "w") as f:
         for line in func:
             writelines.append(line + "\n")
     writelines.insert(0, "JMP " + str(funcleng+1) + "\n")
-    for line in linelines:
-        
-        writelines.append(line + "\n")
+    for DAPLine in linelines:
+        for line in DAPLine:
+            writelines.append(line + "\n")
 
 str0 = ""
 for line in writelines:

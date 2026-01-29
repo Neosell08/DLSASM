@@ -1,4 +1,23 @@
-def SP
-def BSP
+def a
+def b
+def op
+def out
 
+#function definitions
+func addition:
+calc(out, a, b, "ADD")
+endfunc
+func subtraction:
+calc(out, a, b, "ADD")
+endfunc
+func multiplication:
+calc(out, a, b, "ADD")
+endfunc
+func division:
+calc(out, a, b, "ADD")
+endfunc
+
+#input handling
+input(inp)
+calc(out, inp, "+", "EQ")
 

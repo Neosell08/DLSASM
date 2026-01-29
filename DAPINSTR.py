@@ -44,7 +44,7 @@ def InterpretWrite(args):
             lines.append("WRT REG0")
     return lines
 
-def InterpretCalculate(args):
+def InterpretCalculate(args): #arg0: variable to store result into, arg1: number 1, arg2: number 2, arg3; operation
     lines = []
     lines.extend(WriteToPos("REG1", args[1]))
     lines.extend(WriteToPos("REG2", args[2]))
@@ -66,6 +66,10 @@ def InterpretPtrVal(args): #arg0 = var to write/read from, arg1 = ram adress, ar
         lines.append(f"MOV REG0 RM{args[0].addr}")
         lines.append("MOA 1 REG1 REG0")
     return lines
+def InterpretReturn(args):
+    return ["RET"]
+
+
 
 
 

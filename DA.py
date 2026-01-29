@@ -112,6 +112,10 @@ def InterpretMOA(args):
         val[0] += REGISTERS[args[2]]<<12
         val[1] += REGISTERS[args[1]]<<4
     return val
+def InterpretCALL(args):
+    return [23, 0]
+def InterpretRET(args):
+    return [39, 0]
         
 
 INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
@@ -121,7 +125,9 @@ INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
             "JMP":Instruction("JMP", 1, InterpretJMP),
             "WRT":Instruction("WRT", 1, InterpretWRT),
             "JMI":Instruction("JMI", 2, InterpretJMI),
-            "MOA":Instruction("MOA", 3, InterpretMOA)
+            "MOA":Instruction("MOA", 3, InterpretMOA),
+            "CALL":Instruction("CALL", 0, InterpretCALL),
+            "RET":Instruction("RET", 0, InterpretRET)
                        }
 def InterpretLines(lines: list):
     i = 0
