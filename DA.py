@@ -19,6 +19,7 @@ class Instruction:
     def call(self, args: list, linenum):
         if (len(args) != self.params):
             raise ValueError("Not enough paramaters in function: " + self.keyword + " at line " + str(linenum) + ". " + str(len(args)) + " given.\nArgs: " + str(args))
+        args.append(linenum)
         return self.func(args)
         
 
@@ -36,7 +37,7 @@ def InterpretReadWriteMain(arg: str, r: bool): #interpret where to read and writ
             val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&0xff00)<<8)
             val[1] += int(arg.upper().removeprefix("RM"))&0xff
         else:
-            val[1] += REGISTERS[arg.upper()]
+            val[0] += REGISTERS[arg.upper()] << 12
     else:       
         if (arg.upper().startswith("RM")): #write to RAM
             val[0] += 16 + ((int(arg.upper().removeprefix("RM"))&0xff00)<<8)
@@ -69,27 +70,32 @@ def InterpretMOV(args): #Move from one memory location to another
     write = InterpretReadWriteMain(args[0], False)
     val[0] += write[0]
     val[1] += write[1]
-   
+
     read = InterpretReadWriteMain(args[1], True)
     val[0] += read[0]
     val[1] += read[1]
-    
+
     return val
 def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
+    assert(args[1].upper() != "REG0" and args[0].upper() != "REG0")
     return [2 + (REGISTERS[args[1].upper()]<<12) + (CALCINSTR[args[2].upper()]<<4), (REGISTERS[args[0].upper()]<<4)]
 def InterpretRSSC(args): #Reset Screen
     return [5, 0]
 
 def InterpretJMP(args): #Jump to line
-    args[0] = FindJumpLocation(args[0])
+    args[0] = FindJumpLocation(args[0], args[1])
     return [3 + ((args[0]&16711680)>>4), ((args[0]&3840)<<4)+(args[0]&255)]
 def InterpretJMI(args):
-    args[0] = FindJumpLocation(args[0])
+    args[0] = FindJumpLocation(args[0], args[2])
     return [6  + ((args[0]&16773120)>>16) , ((args[0]&4080)<<4)+(args[0]&15)+ (REGISTERS[args[1]]<<4)]
-def FindJumpLocation(arg):
+def FindJumpLocation(arg: str, linenum):
     
     if arg.upper() in Macros:
         return Macros[arg.upper()]
+    elif arg.startswith("+"):
+        return linenum + int(arg.removeprefix("+"))
+    elif arg.startswith("-"):
+        return linenum - int(arg.removeprefix("-"))
     else:
         return int(arg)
     

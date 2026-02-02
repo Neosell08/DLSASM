@@ -21,6 +21,7 @@ class Variable:
         self.kword = kword
         self.addr = addr
 def WriteToPos(pos: str, x) -> list: 
+    
     if type(x) == Variable:
         if (pos.startswith("RM")):
             return [f"MOV REG0 RM{x.addr}", f"MOV {pos} REG0"]
@@ -31,6 +32,11 @@ def WriteToPos(pos: str, x) -> list:
             return [f"IMM {x}", f"MOV {pos} REG0"]
         else:
             return [f"IMM {x}"]
+        
+    else:
+        print(x)
+        print(type(x))
+        return None
         
 
 def InterpretWrite(args):
@@ -68,7 +74,15 @@ def InterpretPtrVal(args): #arg0 = var to write/read from, arg1 = ram adress, ar
     return lines
 def InterpretReturn(args):
     return ["RET"]
-
+def InterpretInput(args):
+    lines = []
+    lines.append("IMM 0")
+    lines.append("MOV REG2 REG0")
+    lines.append("MOV REG1 KBOARD")
+    lines.append("CAL REG1 REG2 EQ")
+    lines.append("JMI -6 REG0")
+    lines.append(f"MOV RM{args.addr} REG1")
+    return lines
 
 
 

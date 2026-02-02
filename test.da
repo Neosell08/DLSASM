@@ -1,13 +1,3 @@
-imm 1 
-mov reg1 reg0
-imm 91
-mov reg3 reg0
-imm 65
-mov reg2 reg0
-wrt reg2
-cal reg2 reg1 add
-mov reg2 reg0
-cal reg2 reg3 LT
-jmi 6 reg0
-rssc
-jmp 0
+MOV REG1 KBOARD
+WRT REG1
+JMP 0

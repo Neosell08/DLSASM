@@ -2,22 +2,37 @@ def a
 def b
 def op
 def out
+def inp
 
 #function definitions
+
 func addition:
 calc(out, a, b, "ADD")
 endfunc
+
 func subtraction:
-calc(out, a, b, "ADD")
+calc(out, a, b, "SUB")
 endfunc
+
 func multiplication:
-calc(out, a, b, "ADD")
+calc(out, a, b, "MUL")
 endfunc
+
 func division:
-calc(out, a, b, "ADD")
+calc(out, a, b, "DIV")
 endfunc
+
+func HandleInp
+
 
 #input handling
-input(inp)
-calc(out, inp, "+", "EQ")
+input(a)
+input(b)
+calc(out, inp, 43, "EQ")
 
+if out:
+addition()
+endif
+
+
+func printresult

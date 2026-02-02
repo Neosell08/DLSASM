@@ -1,0 +1,14 @@
+def x
+def bool
+
+alloc(x, 21)
+calc(bool, x, 20, "EQ")
+
+if bool:
+write("Hello")
+endif
+
+calc(bool, bool, 0, "NOT")
+if bool:
+write("Not Hello")
+endif
