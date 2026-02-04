@@ -85,7 +85,7 @@ def InterpretInstruction(line: str, linenum: int): #args: line string and index 
     try:
         argindx = line.index("(")
         instr = line[:argindx]
-        args = line.removeprefix(instr).removesuffix(")").removeprefix("(").removesuffix(" ").removesuffix(" ").split(",")
+        args = line.removeprefix(instr).removesuffix(" ").removesuffix(")").removeprefix("(").removesuffix(" ").removeprefix(" ").split(",")
         argstoremove = []
         for i in range(len(args)):
             arg = HandleParam(args[i].removeprefix(" "))
@@ -209,7 +209,6 @@ while i < len(lines):
 
 #end of checking for pre compile things
 
-print(lines)
 curremoved = 0
 funcleng = 0
 for i in range(len(funcs)):

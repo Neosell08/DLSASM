@@ -1,0 +1,25 @@
+def temp
+def inp
+def bool
+def tempnum
+
+func inputing:
+
+chrinput(inp)
+calc(bool, inp, 57, "GT")
+calc(temp, inp, 48, "LT")
+calc(bool, temp, bool, "OR") 
+
+#if input is not a number
+if bool: 
+return()
+endif
+
+calc(tempnum, tempnum, 10, "MUL")
+calc(inp, inp, 48, "SUB")
+calc(tempnum, tempnum, inp, "ADD")
+inputing()
+endfunc
+
+inputing()
+write(tempnum)

@@ -1,0 +1,66 @@
+def temp
+def tempnum
+def out
+def bool
+def bool2
+
+
+alloc(tempnum, 6234)
+
+calc(temp, tempnum, 10000, "DIV")
+calc(out, temp, 48, "ADD")
+calc(bool, temp, 0, "EQ")
+calc(bool, bool, 0, "NOT")
+
+if bool:
+write(out)
+endif
+
+calc(temp, temp, 10000, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+
+calc(temp, tempnum, 1000, "DIV")
+calc(out, temp, 48, "ADD")
+calc(bool2, temp, 0, "EQ")
+calc(bool2, bool2, 0, "NOT")
+calc(bool, bool, bool2, "OR")
+
+if bool:
+write(out)
+endif
+
+calc(temp, temp, 1000, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+
+calc(temp, tempnum, 100, "DIV")
+calc(out, temp, 48, "ADD")
+calc(bool2, temp, 0, "EQ")
+calc(bool2, bool2, 0, "NOT")
+calc(bool, bool, bool2, "OR")
+
+if bool:
+write(out)
+endif
+
+calc(temp, temp, 100, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+
+calc(temp, tempnum, 10, "DIV")
+calc(out, temp, 48, "ADD")
+calc(bool2, temp, 0, "EQ")
+calc(bool2, bool2, 0, "NOT")
+calc(bool, bool, bool2, "OR")
+
+if bool:
+write(out)
+endif
+
+calc(temp, temp, 10, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+
+calc(out, tempnum, 48, "ADD")
+write(out)
