@@ -88,7 +88,7 @@ def InterpretPtrVal(args): #arg0 = var to write/read from, arg1 = ram adress, ar
         lines.append("MOA 1 REG1 REG0")
     return lines
 def InterpretReturn(args):
-    return ["RET"]
+    return [f"RET {int(args[0])}"]
 def InterpretInput(args):
     lines = []
     lines.append("IMM 0")
@@ -97,8 +97,6 @@ def InterpretInput(args):
     lines.append("CAL REG1 REG2 EQ")
     lines.append("JMI -4 REG0")
     lines.append("WRT REG1")
-    lines.append("IMM 10")
-    lines.append("WRT REG0")
     lines.append(f"MOV RM{args[0].addr} REG1")
     return lines
 def HandleFunction(sublist: list, funcname:str, ifstatements:int, variables: list, ifvar:Variable = None):

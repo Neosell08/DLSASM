@@ -122,7 +122,7 @@ def InterpretMOA(args):
 def InterpretCALL(args):
     return [23, 0]
 def InterpretRET(args):
-    return [39, 0]
+    return [39, int(args[0])]
         
 
 INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
@@ -134,7 +134,7 @@ INSTRSET = {"IMM":Instruction("IMM", 1, InterpretIMM),
             "JMI":Instruction("JMI", 2, InterpretJMI),
             "MOA":Instruction("MOA", 3, InterpretMOA),
             "CALL":Instruction("CALL", 0, InterpretCALL),
-            "RET":Instruction("RET", 0, InterpretRET)
+            "RET":Instruction("RET", 1, InterpretRET)
                        }
 def InterpretLines(lines: list):
     i = 0

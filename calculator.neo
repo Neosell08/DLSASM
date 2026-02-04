@@ -9,14 +9,14 @@ def bool
 
 func inputing:
 
-input(inp)
+chrinput(inp)
 calc(bool, inp, 57, "GT")
 calc(temp, inp, 48, "LT")
 calc(bool, temp, bool, "OR") 
 
 #if input is not a number
 if bool: 
-return()
+return(1)
 endif
 
 calc(tempnum, tempnum, 10, "MUL")
@@ -30,7 +30,7 @@ inputing()
 alloc(a, tempnum)
 inputing()
 alloc(b, tempnum)
-input(op)
+chrinput(op)
 
 calc(bool, op, "+", "EQ")
 if bool:

@@ -62,6 +62,13 @@ def Allocate(args: list):
             raise Exception("Invalid allocation parameter")
         else:
             writeval = str(ord(args[1][0]))
+    elif type(args[1]) == Variable:
+        if not hasvarb:
+            foundvarb = Variable(args[0], FindFreeAddr())
+            varbs.append(foundvarb)
+        lines.append(f"MOV REG1 RM{args[1].addr}")
+        lines.append(f"MOV RM{foundvarb.addr} REG1")
+        return lines
     else:
         writeval = str(args[1])
     if (hasvarb):
@@ -78,8 +85,8 @@ INSTRSET = {
     "alloc":Instruction("alloc", 2, Allocate),
     "calc":Instruction("calc", 4, InterpretCalculate),
     "ptrval":Instruction("ptrval", 3, InterpretPtrVal),
-    "chrinput":Instruction("input", 1, InterpretInput),
-    "return":Instruction("return", 0, InterpretReturn)}
+    "chrinput":Instruction("chrinput", 1, InterpretInput),
+    "return":Instruction("return", 1, InterpretReturn)}
 
 def InterpretInstruction(line: str, linenum: int): #args: line string and index of line
     try:
@@ -134,7 +141,7 @@ def ParsePreCompLine(line: str, env: list) -> tuple:
     global varbs
     global ifvars
     global consts
-    if line == "\n" or line[0] == '#':
+    if line == "\n" or line == "" or line[0] == '#':
         return None, env
     elif line.startswith("func"):
         parts = line.split(" ")
@@ -234,8 +241,8 @@ for i in range(len(funcs)):
     if (isif):
         funcline.insert(0, f"MOV REG1 RM{func.ifvar.addr}")
         funcline.insert(1, f"JMI +2 REG1")
-        funcline.insert(2, "RET")
-    funcline.append("RET")
+        funcline.insert(2, "RET 0")
+    funcline.append("RET 0")
     funcleng += len(funcline)
     func.realarea.append(funcleng)
     funclines.append(funcline)

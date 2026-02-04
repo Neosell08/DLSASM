@@ -12,7 +12,7 @@ calc(bool, temp, bool, "OR")
 
 #if input is not a number
 if bool: 
-return()
+return(1)
 endif
 
 calc(tempnum, tempnum, 10, "MUL")
