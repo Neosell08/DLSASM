@@ -188,7 +188,7 @@ while i < len(lines):
             lastleng = 1
         i+=1
     else:
-        lines.pop(0)
+        lines.pop(i)
         lastindex = len(enviromentlines)-1
         if line != None:
             enviromentlines[lastindex].append(line)
@@ -209,15 +209,13 @@ while i < len(lines):
 
 #end of checking for pre compile things
 
-
+print(lines)
 curremoved = 0
 funcleng = 0
 for i in range(len(funcs)):
     funcline = []
     func = funcs[i]
-    print(func.__str__())
     func.realarea = [funcleng]
-    print(funcs[0].realarea)
     isif = func.ifvar != None
     for line in func.code:
         funcline.extend(InterpretInstruction(line, -1))

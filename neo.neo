@@ -4,7 +4,7 @@ def out
 def bool
 
 
-alloc(tempnum, 56234)
+alloc(tempnum, 6234)
 
 calc(temp, tempnum, 10000, "DIV")
 calc(out, temp, 48, "ADD")
