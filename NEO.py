@@ -43,14 +43,19 @@ def FindFreeAddr():
                 return i
 def Allocate(args: list):
     lines = []
-    
+    parts 
     hasvarb = False
     foundvarb = None
-    for varb in varbs:
-        if (varb.kword == parts[1]):
-            hasvarb = True
-            foundvarb = varb
-            break
+    if type(args[0]) == Variable:
+        hasvarb = True
+        foundvarb = args[0]
+    else:
+        for varb in varbs:
+            if (varb.kword == args[0]):
+                hasvarb = True
+                foundvarb = varb
+                break
+    
     if (hasvarb):
         lines.append("IMM " + str(args[1]))
         lines.append(f"MOV RM{foundvarb.addr} REG0")
@@ -59,74 +64,6 @@ def Allocate(args: list):
         lines.append("IMM " + str(args[1]))
         lines.append(f"MOV RM{varbs[len(varbs)-1].addr} REG0")
     return lines
-
-funclines = []
-removedlines = 0
-i = 0
-isInFunc = False
-isInIf = False
-#check for pre-compile things
-curFuncName = ""
-ifstatements = 0
-curFuncArea = [0, 0]
-while i - removedlines < len(lines):
-    curi = i - removedlines
-    line = lines[curi]
-    if line == "\n" or line[0] == '#': #if is empty line or comment
-        lines.pop(curi)
-        removedlines += 1
-    elif (line.startswith("func") or line.startswith("if")) and not isInFunc: #if the start of a function
-        if (line.startswith("func")):
-            removedlines += 1
-            lines.pop(curi)
-        else:
-            
-            lines[curi] = lines[curi][:2] + str(ifstatements) + lines[curi][2:]
-            isInIf =True
-        curFuncArea[0] = curi
-        curFuncName = ""
-        if (line.startswith("func")):
-            curFuncName = line.split(" ")[1].removesuffix(":")
-        else:
-            curFuncName = f"if{ifstatements}"
-        isInFunc = True
-        
-
-    elif (line.startswith("endfunc") or line.startswith("endif")) and isInFunc: #if the end of a function
-        removedlines += 1
-        lines.pop(curi)
-        curFuncArea[1] = curi
-        if (isInIf):
-            curFuncArea[0] +=1
-            funcs.insert(ifstatements, Function(curFuncName, curFuncArea.copy()))
-        else:
-            funcs.append(Function(curFuncName, curFuncArea.copy()))
-        isInFunc = False
-        isInIf = False
-        curFuncName = ""
-        curFuncArea = [0, 0]
-        ifstatements +=1
-    elif line.startswith("const"): #if defining a constant
-        removedlines += 1
-        lines.pop(curi)
-        parts = line.split(" ")
-        consts[parts[1]] = HandleParam(parts[2])
-    elif line.startswith("def"): #if defining a variable pre interpret
-        removedlines += 1
-        lines.pop(curi)
-        parts = line.split(" ")
-        hasvarb = False
-        for varb in varbs:
-            if (varb.kword == parts[1]):
-                hasvarb = True
-                break
-        if (not hasvarb):
-            varbs.append(Variable(parts[1], FindFreeAddr()))
-        
-    i += 1
-
-
-#end of checking for pre compile things
 
 INSTRSET = {
     "write":Instruction("write", 1, InterpretWrite),
@@ -182,67 +119,110 @@ def GetFunc(key:str) -> Function:
     for f in funcs:
         if f.kword == key:
             return f
+def ParsePreCompLine(line: str, env: list) -> tuple: 
+    global funcs
+    global varbs
+    if line == "\n" or line[0] == '#':
+        return None, env
+    elif line.startswith("func") or line.startswith("if"):
+        parts = line.split(" ")
+        env.append(parts[1].removesuffix(":"))
     
 
+ 
+funclines = []
+removedlines = 0
+i = 0
+isInFunc = False
+isInIf = False
+#check for pre-compile things
+curFuncName = ""
+ifstatements = 0
+curFuncArea = [0, 0]
+# while i - removedlines < len(lines):
+#     curi = i - removedlines
+#     line = lines[curi]
+#     if line == "\n" or line[0] == '#': #if is empty line or comment
+#         lines.pop(curi)
+#         removedlines += 1
+#     elif line.startswith("func") or line.startswith("if "):
+#         funcname = ""
+#         ifvar = None
+#         if (line.startswith("func")):
+#             funcname = line.split(" ")[1].removesuffix(":")
+#         else:
+#             funcname = f"if{ifstatements}"
+#             ifvar = GetVar(line.split(" ")[1].removesuffix(":"))
+
+
+        
+#         funcsfound, sblst = HandleFunction(lines[curi+1:], funcname, ifstatements, varbs, ifvar)
+#         lineleng = funcsfound.pop(0)
+#         lines = lines[:curi+1]
+#         lines.extend(sblst)
+#         print(len(lines))
+        
+        
+        
+#         funcsfound.pop(0)
+#         for func in funcsfound:
+#             name = func.pop(0)
+#             ifvar = func.pop(0)
+#             funcs.append(Function(name, func, ifvar))
+
+#     elif line.startswith("const"): #if defining a constant
+#         removedlines += 1
+#         lines.pop(curi)
+#         parts = line.split(" ")
+#         consts[parts[1]] = HandleParam(parts[2])
+#     elif line.startswith("def"): #if defining a variable pre interpret
+#         removedlines += 1
+#         lines.pop(curi)
+#         parts = line.split(" ")
+#         hasvarb = False
+#         for varb in varbs:
+#             if (varb.kword == parts[1]):
+#                 hasvarb = True
+#                 break
+#         if (not hasvarb):
+#             varbs.append(Variable(parts[1], FindFreeAddr()))
+        
+#     i += 1
+
+#end of checking for pre compile things
+
+for func in funcs:
+    print(func.__str__())
 curremoved = 0
 for i in range(len(funcs)):
     funcline = []
     func = funcs[i]
-    
-    
-    for index in range(func.area[0], func.area[1]):
-        print(lines[index-curremoved])
-        funcline.extend(InterpretInstruction(lines.pop(index-curremoved), index + removedlines))
+    isif = func.ifvar != None
+    for line in func.code:
+        funcline.extend(InterpretInstruction(line, -1))
         removedlines += 1
         curremoved += 1
-    
+    if (isif):
+        funcline.insert(0, f"MOV REG1 RM{func.ifvar.addr}")
+        funcline.insert(1, f"JMI +2 REG1")
+        funcline.insert(2, "RET")
     funcline.append("RET")
     funclines.append(funcline)
-
-# #making the integer input function
-# intinpfunc = []
-# intinpfunc.append("MOV REG1 KBOARD")
-# intinpfunc.append("WRT REG1")
-# intinpfunc.append("IMM 10")
-# intinpfunc.append("MOV REG2 REG0")
-# intinpfunc.append("CAL REG1 REG2 EQ")
-# intinpfunc.append("MOV REG2 REG0")
-# intinpfunc.append("CAL REG2 REG1 NOT") 
-# intinpfunc.append("JMI 2+ REG0")#check if there is a newline then finish
-# intinpfunc.append("RET")
-# intinpfunc.append("MOA 0 REG2 REG3")
-# intinpfunc.append("MOA 1 REG3 REG1")
-# intinpfunc.append("IMM 10")
-# intinpfunc.append("MOV REG1 REG0")
-# intinpfunc.append("CAL REG1 REG2 MUL")
-# intinpfunc.append("MOV REG2 REG0")
-# intinpfunc.append("MOA 0 REG1 REG3")
-# intinpfunc.append("CAL REG1 REG2 ADD")
-# intinpfunc.append("MOA 1 REG3 REG0")
-# intinpfunc.append("JMP 1")
-
-
 
 
 funcleng = 0
 
-for i in range(len(funclines)):
+for i in range(len(funclines)): #determining the length of DA code
     func = funclines[i]
+    
     funcs[i].realArea = [funcleng, funcleng + len(func)] #the size of the function in DA code
     funcleng += len(func)
 linelines = []
+
 for i in range(len(lines)):
     line = lines[i]
     ret = []
-    if (line.startswith("if")):
-        parts = line.split(" ")
-        ret = InterpretInstruction(parts[0] +"()", i + removedlines) 
-        retleng = len(ret)
-        ret.insert(0, f"MOV REG1 RM{GetVar(parts[1].removesuffix(":")).addr}")
-        ret.insert(1, f"CAL REG1 REG2 NOT")
-        ret.insert(2, f"JMI +{retleng+1} REG0")
-    else:
-        ret = InterpretInstruction(line, i + removedlines) 
+    ret = InterpretInstruction(line, i + removedlines) 
     assert(ret != None)
     linelines.append(ret)
 

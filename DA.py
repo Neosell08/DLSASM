@@ -34,14 +34,14 @@ def InterpretReadWriteMain(arg: str, r: bool): #interpret where to read and writ
 
     if r:
         if (arg.upper().startswith("RM")): #read from RAM
-            val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&0xff00)<<8)
-            val[1] += int(arg.upper().removeprefix("RM"))&0xff
+            val[0] += 32 + ((int(arg.upper().removeprefix("RM"))&0xff00))
+            val[1] += (int(arg.upper().removeprefix("RM"))&0xff)<<8
         else:
-            val[0] += REGISTERS[arg.upper()] << 12
+            val[1] += REGISTERS[arg.upper()] << 4
     else:       
         if (arg.upper().startswith("RM")): #write to RAM
-            val[0] += 16 + ((int(arg.upper().removeprefix("RM"))&0xff00)<<8)
-            val[1] += int(arg.upper().removeprefix("RM"))&0xff
+            val[0] += 16 + ((int(arg.upper().removeprefix("RM"))&0xff00))
+            val[1] += (int(arg.upper().removeprefix("RM"))&0xff)<<8
         else:
             
             val[1] += REGISTERS[arg.upper()]
@@ -74,7 +74,8 @@ def InterpretMOV(args): #Move from one memory location to another
     read = InterpretReadWriteMain(args[1], True)
     val[0] += read[0]
     val[1] += read[1]
-
+    if (args[2] == 23):
+        print(args[1])
     return val
 def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
     assert(args[1].upper() != "REG0" and args[0].upper() != "REG0")
@@ -87,7 +88,7 @@ def InterpretJMP(args): #Jump to line
     return [3 + ((args[0]&16711680)>>4), ((args[0]&3840)<<4)+(args[0]&255)]
 def InterpretJMI(args):
     args[0] = FindJumpLocation(args[0], args[2])
-    return [6  + ((args[0]&16773120)>>16) , ((args[0]&4080)<<4)+(args[0]&15)+ (REGISTERS[args[1]]<<4)]
+    return [6 + ((args[0]&0xff0000)>>12), 0xffff&args[0]]
 def FindJumpLocation(arg: str, linenum):
     
     if arg.upper() in Macros:
@@ -100,7 +101,7 @@ def FindJumpLocation(arg: str, linenum):
         return int(arg)
     
 def InterpretWRT(args): #Draw to Screen ex: WRT REG0
-    val = [(4) + (REGISTERS[args[0]]<<12), 0]
+    val = [(4), (REGISTERS[args[0]]<<4)]
     return val
 def InterpretRFSC(args): #Refresh Screen
     return [(3) + (8<<8), 0]

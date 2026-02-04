@@ -1,0 +1,10 @@
+def x 
+
+func foo:
+if x:
+write("yes")
+endif
+endfunc
+
+alloc(x, 1)
+foo()

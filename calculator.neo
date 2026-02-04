@@ -2,37 +2,88 @@ def a
 def b
 def op
 def out
+def temp
+def tempnum
 def inp
+def bool
 
-#function definitions
+func inputing:
 
-func addition:
-calc(out, a, b, "ADD")
-endfunc
+input(inp)
+calc(bool, inp, 57, "GT")
+calc(temp, inp, 48, "LT")
+calc(bool, temp, bool, "OR") 
 
-func subtraction:
-calc(out, a, b, "SUB")
-endfunc
-
-func multiplication:
-calc(out, a, b, "MUL")
-endfunc
-
-func division:
-calc(out, a, b, "DIV")
-endfunc
-
-func HandleInp
-
-
-#input handling
-input(a)
-input(b)
-calc(out, inp, 43, "EQ")
-
-if out:
-addition()
+#if input is not a number
+if bool: 
+return()
 endif
 
+calc(tempnum, tempnum, 10, "MUL")
+calc(inp, inp, 48, "SUB")
+calc(tempnum, tempnum, inp, "ADD")
+inputing()
+endfunc
 
-func printresult
+#input handling
+inputing()
+alloc(a, tempnum)
+inputing()
+alloc(b, tempnum)
+input(op)
+
+calc(bool, op, "+", "EQ")
+if bool:
+calc(tempnum, a, b, "ADD")
+endif
+
+calc(bool, op, "-", "EQ")
+if bool:
+calc(tempnum, a, b, "SUB")
+endif
+
+calc(bool, op, "x", "EQ")
+calc(temp, op, "*", "EQ")
+calc(bool, bool, temp, "OR")
+if bool:
+calc(tempnum, a, b, "MUL")
+endif
+
+calc(bool, op, "/", "EQ")
+if bool:
+calc(tempnum, a, b, "DIV")
+endif
+
+calc(temp, tempnum, 10000, "DIV")
+calc(out, temp, 48, "ADD")
+write(out)
+calc(temp, temp, 10000, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+calc(temp, tempnum, 10000, "DIV")
+calc(out, temp, 48, "ADD")
+write(out)
+calc(temp, temp, 10000, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+calc(temp, tempnum, 1000, "DIV")
+calc(out, temp, 48, "ADD")
+write(out)
+calc(temp, temp, 1000, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+calc(temp, tempnum, 100, "DIV")
+calc(out, temp, 48, "ADD")
+write(out)
+calc(temp, temp, 100, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+calc(temp, tempnum, 10, "DIV")
+calc(out, temp, 48, "ADD")
+write(out)
+calc(temp, temp, 10, "MUL")
+calc(tempnum, tempnum, temp, "SUB")
+
+
+calc(out, tempnum, 48, "ADD")
+write(out)
