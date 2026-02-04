@@ -8,7 +8,6 @@ class Instruction:
         self.func = func
         
     def call(self, args: list, linenum) -> list:
-        print(args)
         if (len(args) != self.params):
             raise ValueError("Not enough paramaters in function: " + self.keyword + " at line " + str(linenum) + ". " + str(len(args)) + " given.\nArgs: " + str(args))
         return self.func(args)

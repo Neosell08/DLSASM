@@ -1,5 +1,5 @@
 def x 
-alloc(x, 20)
+alloc(x, 21)
 calc(x, x, 21, "eq")
 if x:
 write("a")

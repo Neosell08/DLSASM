@@ -173,6 +173,17 @@ lastleng = 0
 #check for pre-compile things
 while i < len(lines):
     line = lines[i]
+    if line.startswith("import"):
+        importlines = []
+        lines.pop(i)
+        with open(f"{line.split(" ")[1]}.neo", "r") as f:
+            importlines = f.readlines()
+            importlines.reverse()
+        for l in importlines:
+            lines.insert(i, l.removesuffix("\n"))
+        print(f"[Imported {line.split(" ")[1]}.neo]")
+        
+        continue
     line, enviroment = ParsePreCompLine(line, enviroment)
     if curfunc == None:
         if line != None:
