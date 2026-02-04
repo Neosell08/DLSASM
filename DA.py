@@ -25,7 +25,7 @@ class Instruction:
 
 
 REGISTERS = {"REG0":0, "REG1":1,"REG2":2, "REG3":3, "KBOARD":4, "RNDM":5}
-CALCINSTR = {"ADD":0, "SUB":1, "MUL":2, "DIV":3, "LT":4, "EQ":5, "GT":6, "NOT": 7, "AND":8, "OR":9, "XOR":10, "LSFT":11, "RSFT":12}
+CALCINSTR = {"ADD":0, "SUB":1, "MUL":2, "DIV":3, "GT":4, "EQ":5, "LT":6, "NOT": 7, "AND":8, "OR":9, "XOR":10, "LSFT":11, "RSFT":12}
 
 
 
