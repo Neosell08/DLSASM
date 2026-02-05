@@ -26,7 +26,7 @@ def HandleParam(arg: str):
     if arg.isnumeric():
         return int(arg)
     elif (arg.startswith("\"") and arg.endswith("\"")):
-        return arg.strip("\"")
+        return arg.strip("\"").replace("\\n", "\n")
     elif (arg in consts):
         return consts[arg]
     elif HasVar(arg) != None:

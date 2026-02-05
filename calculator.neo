@@ -1,11 +1,12 @@
+def tempnum
 def a
 def b
 def op
 def out
 def temp
-def tempnum
 def inp
 def bool
+def bool2
 
 func inputing:
 
@@ -26,11 +27,16 @@ inputing()
 endfunc
 
 #input handling
+write("please enter number 1\n")
 inputing()
 alloc(a, tempnum)
+alloc(tempnum, 0)
+write("please enter number 2\n")
 inputing()
 alloc(b, tempnum)
+write("please enter the opertation\n")
 chrinput(op)
+write("\n")
 
 calc(bool, op, "+", "EQ")
 if bool:
@@ -54,33 +60,59 @@ if bool:
 calc(tempnum, a, b, "DIV")
 endif
 
-calc(temp, tempnum, 10000, "DIV")
-calc(out, temp, 48, "ADD")
-write(out)
-calc(temp, temp, 10000, "MUL")
-calc(tempnum, tempnum, temp, "SUB")
+write("your number is:\n")
 
 calc(temp, tempnum, 10000, "DIV")
 calc(out, temp, 48, "ADD")
+calc(bool, temp, 0, "EQ")
+calc(bool, bool, 0, "NOT")
+
+if bool:
 write(out)
+endif
+
 calc(temp, temp, 10000, "MUL")
 calc(tempnum, tempnum, temp, "SUB")
+
 
 calc(temp, tempnum, 1000, "DIV")
 calc(out, temp, 48, "ADD")
+calc(bool2, temp, 0, "EQ")
+calc(bool2, bool2, 0, "NOT")
+calc(bool, bool, bool2, "OR")
+
+if bool:
 write(out)
+endif
+
 calc(temp, temp, 1000, "MUL")
 calc(tempnum, tempnum, temp, "SUB")
 
+
 calc(temp, tempnum, 100, "DIV")
 calc(out, temp, 48, "ADD")
+calc(bool2, temp, 0, "EQ")
+calc(bool2, bool2, 0, "NOT")
+calc(bool, bool, bool2, "OR")
+
+if bool:
 write(out)
+endif
+
 calc(temp, temp, 100, "MUL")
 calc(tempnum, tempnum, temp, "SUB")
 
+
 calc(temp, tempnum, 10, "DIV")
 calc(out, temp, 48, "ADD")
+calc(bool2, temp, 0, "EQ")
+calc(bool2, bool2, 0, "NOT")
+calc(bool, bool, bool2, "OR")
+
+if bool:
 write(out)
+endif
+
 calc(temp, temp, 10, "MUL")
 calc(tempnum, tempnum, temp, "SUB")
 
