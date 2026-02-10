@@ -65,6 +65,8 @@ def InterpretWrite(args):
             lines.append("WRT REG0")
     return lines
 
+def InterpretResetScreen(args):
+    return ["RSSC"]
 def InterpretCalculate(args): #arg0: variable to store result into, arg1: number 1, arg2: number 2, arg3; operation
     lines = []
     lines.extend(WriteToPos("REG1", args[1]))

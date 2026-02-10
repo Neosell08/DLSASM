@@ -82,6 +82,7 @@ def Allocate(args: list):
 
 INSTRSET = {
     "write":Instruction("write", 1, InterpretWrite),
+    "resetscreen":Instruction("resetscreen", 0, InterpretResetScreen),
     "alloc":Instruction("alloc", 2, Allocate),
     "calc":Instruction("calc", 4, InterpretCalculate),
     "ptrval":Instruction("ptrval", 3, InterpretPtrVal),

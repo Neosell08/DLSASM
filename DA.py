@@ -103,8 +103,6 @@ def FindJumpLocation(arg: str, linenum):
 def InterpretWRT(args): #Draw to Screen ex: WRT REG0
     val = [(4), (REGISTERS[args[0]]<<4)]
     return val
-def InterpretRFSC(args): #Refresh Screen
-    return [(3) + (8<<8), 0]
 def InterpretMOA(args):
     val = [65, 0]
     if (args[0] == 0): # read from the adress on the second register and write it to the first
