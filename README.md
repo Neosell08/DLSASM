@@ -1,1 +1,1 @@
-This is a project where I created my own CPU in Logisim and then created my own assembly-like programming languages to interact with it and create programs for the CPU.
+This is a project where I created my own CPU in Logisim and then created my own assembly-like programming languages to interact with it and create programs for the CPU. Check Report.pdf for a more detailed explanation.
