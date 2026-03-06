@@ -1,7 +1,7 @@
 from NEOINSTR import *
 from DA import InterpretLines
 lines = []
-FILENAME = "neo.neo"
+FILENAME = "codeExamples/neo.neo"
 
 
 with open(FILENAME, "r") as f:

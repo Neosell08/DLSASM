@@ -74,8 +74,7 @@ def InterpretMOV(args): #Move from one memory location to another
     read = InterpretReadWriteMain(args[1], True)
     val[0] += read[0]
     val[1] += read[1]
-    if (args[2] == 23):
-        print(args[1])
+    
     return val
 def InterpretCAL(args): #Calculate and move into REG0. First arg is A second is B
     assert(args[1].upper() != "REG0" and args[0].upper() != "REG0")
