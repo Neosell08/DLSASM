@@ -9,7 +9,7 @@ Open the CPU.circ file
 
 Write your NeoLang code in neo.neo
 
-compile by running NEO.py
+compile by running NEO.py, if you want to change which file it compiles you can do so in the first part of the code
 
 Open Logisim, right click on the ROM component, and click load image, and then choose the file named code
 
