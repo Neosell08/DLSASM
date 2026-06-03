@@ -1,8 +1,19 @@
 from NEOINSTR import *
 from DA import InterpretLines
-lines = []
+import sys
+import argparse
+
+# parser = argparse.ArgumentParser()
+# parser.add_argument("-v", "--version", action="version", version="1.0.0")
+# parser.add_argument("-o", "--output", type=str, help="Output path")
+# lines = []
+# args = parser.parse_args()
 FILENAME = "codeExamples/neo.neo"
 
+OUTPUT = None
+
+# if args.output:
+#     OUTPUT = args.output
 
 with open(FILENAME, "r") as f:
     lines = f.readlines()
@@ -137,7 +148,7 @@ def GetFunc(key:str) -> Function:
             return f
 ifvars = []
 
-def ParsePreCompLine(line: str, env: list) -> tuple: 
+def ParsePreCompileLine(line: str, env: list) -> tuple: 
     global funcs
     global varbs
     global ifvars
@@ -192,7 +203,7 @@ while i < len(lines):
         print(f"[Imported {line.split(" ")[1]}.neo]")
         
         continue
-    line, enviroment = ParsePreCompLine(line, enviroment)
+    line, enviroment = ParsePreCompileLine(line, enviroment)
     if curfunc == None:
         if line != None:
             lines[i] = line
@@ -271,22 +282,31 @@ with open("NEOOut.da", "w") as f:
 str0 = ""
 for line in writelines:
     str0 += line
-try:
-    with open("interm.da", "x") as f:
-        f.write(str0)
-except FileExistsError:
-    with open("interm.da", "w") as f:
-        f.write(str0)
-print("[Written to DA file]")
-code = InterpretLines(writelines)
 
-try:
-    with open("Circuits/code", "x") as f:
-        f.write(code)
-except FileExistsError:
-    with open("Circuits/code", "w") as f:
-        f.write(code)
-print("[Written to file]")
+
+
+def WriteToFile(str, file):
+    try:
+        with open(file, "x") as f:
+            f.write(str)
+    except FileExistsError:
+        with open(file, "w") as f:
+            f.write(str)
+
+if (OUTPUT):
+    if (OUTPUT.endswith("da")):
+        WriteToFile(str0, OUTPUT)
+    else:
+        code = InterpretLines(writelines)
+        WriteToFile(code, OUTPUT)
+    print("[Written to file]")
+else:
+    WriteToFile(str0, "interm.da")
+    print("[Written to DA file]")
+    code = InterpretLines(writelines)
+
+    WriteToFile(code, "Circuits/code")
+    print("[Written to file]")
 
     
 
